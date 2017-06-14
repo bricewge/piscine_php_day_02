@@ -1,29 +1,29 @@
 #!/usr/bin/php
 <?PHP
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-error_reporting(E_NOTICE);
-
-setlocale(LC_TIME, "fr_FR");
-date_default_timezone_set("Europe/Paris");
-
 if ($argc >= 2) {
-    $time = strptime($argv[1], "%A %e %B %Y %H:%M:%S");
-    echo $argv[1]."\n";
-    echo gettype($time)." ".(int)$time."\n";
-    print_r($time);
-    if ($time !== FALSE) {
-        if (strlen($time["unparsed"]) != 0)
-            exit("Wrong Format\n");
-        $month = ($time["tm_mday"] != 0) ? $time["tm_mday"] - 1 : 0;
-        $result = mktime($time["tm_hour"], $time["tm_min"], $time["tm_sec"],
-                         $month, $time["tm_mday"], $time["tm_year"] + 1900);
-        echo ((int)$result - 60*60)."\n";
-    }
-    else
+    date_default_timezone_set("Europe/Paris");
+    $months = array('janvier' => 1, 'février' => 2, 'mars' => 3, 'avril' => 4,
+                    'mai' => 5, 'juin' => 6, 'juillet' => 7, 'août' => 8,
+                    'septembre' => 9, 'octobre' => 10, 'novembre' => 11, 'décembre' => 12);
+    $wdays = array('lundi' => 1, 'mardi' => 2, 'mercredi' => 3, 'jeudi' => 4,
+                   'vendredi' => 5, 'samedi' => 6, 'dimanche' => 7);
+
+    $pattern = "/^([A-Z]?[a-z]+) ([0-9]{1,2}) ([A-Z]?[a-z]+) ([0-9]{4}) ([0-9]{2}):([0-9]{2}):([0-9]{2})$/";
+    preg_match($pattern, $argv[1], $match);
+    if (count($match) != 8)
         exit("Wrong Format\n");
+    else {
+        if ($wdays[strtolower($match[1])] === NULL or $months[strtolower($match[3])] === NULL)
+            exit("Wrong Format\n");
+        $nday = $match[2];
+        $month = $months[strtolower($match[3])];
+        $year = $match[4];
+        $hour = $match[5];
+        $min = $match[6];
+        $sec = $match[7];
+        echo mktime($hour, $min, $sec, $month, $nday, $year)."\n";
+    }
 }
 
 ?>
